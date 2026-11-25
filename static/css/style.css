@@ -1,0 +1,82 @@
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#1a1a2e;color:#eee;min-height:100vh}
+header{background:#16213e;padding:12px 20px;position:sticky;top:0;z-index:100;box-shadow:0 2px 20px rgba(0,0,0,.5)}
+.header-top{display:flex;align-items:baseline;gap:12px;margin-bottom:8px}
+h1{font-size:1.3em;color:#fff}
+.subtitle{color:#4caf50;font-size:.85em;font-weight:600}
+.controls-row{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-bottom:6px}
+input[type="text"],select{padding:6px 8px;border:1px solid #333;border-radius:5px;background:#0f3460;color:#eee;font-size:12px}
+input[type="text"]{width:200px}
+select{max-width:220px}
+input:focus,select:focus{outline:none;border-color:#e94560}
+button{padding:6px 12px;border:none;border-radius:5px;cursor:pointer;font-size:12px;font-weight:600;transition:all .2s}
+.btn-primary{background:#e94560;color:#fff;font-size:13px;padding:8px 16px}
+.btn-primary:hover{background:#ff6b6b}
+.btn-primary:disabled{background:#666;cursor:wait}
+#favorites-btn{background:#333;color:#ffd700}
+#favorites-btn.active{background:#ffd700;color:#1a1a2e}
+.checkbox-label{display:flex;align-items:center;gap:3px;font-size:11px;color:#aaa;cursor:pointer;white-space:nowrap}
+.quick-search{display:flex;gap:4px;align-items:center;flex-wrap:wrap;margin-bottom:6px}
+.tag-btn{background:#0f3460;color:#aaa;padding:4px 8px;font-size:11px;border:1px solid #333}
+.tag-btn:hover,.tag-btn.active{background:#e94560;color:#fff;border-color:#e94560}
+.progress-bar{position:relative;height:22px;background:#0f3460;border-radius:4px;overflow:hidden;margin-top:6px}
+.progress-fill{height:100%;background:linear-gradient(90deg,#e94560,#ff6b6b);transition:width .3s;width:0%}
+.progress-text{position:absolute;top:0;left:0;right:0;text-align:center;line-height:22px;font-size:11px;color:#fff;font-weight:600}
+main{max-width:1400px;margin:12px auto;padding:0 12px}
+.products-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.product-card{background:#16213e;border-radius:10px;padding:12px;position:relative;cursor:pointer;transition:transform .2s,box-shadow .2s}
+.product-card:hover{transform:translateY(-3px);box-shadow:0 6px 20px rgba(233,69,96,.2)}
+.discount-badge{position:absolute;top:8px;left:8px;background:#e94560;color:#fff;padding:3px 8px;border-radius:4px;font-weight:bold;font-size:13px;z-index:2}
+.savings-badge{position:absolute;top:8px;left:70px;background:#4caf50;color:#fff;padding:3px 6px;border-radius:4px;font-size:11px;z-index:2}
+.fav-btn{position:absolute;top:8px;right:8px;font-size:20px;cursor:pointer;z-index:2;opacity:.4;transition:opacity .2s}
+.fav-btn:hover,.fav-btn.active{opacity:1}
+.product-card img{width:100%;height:200px;object-fit:contain;margin:28px 0 10px}
+.product-card h3{font-size:13px;line-height:1.4;min-height:36px;margin-bottom:8px;color:#ddd}
+.price-row{display:flex;align-items:baseline;gap:8px;margin-bottom:4px}
+.price-current{font-size:20px;font-weight:bold;color:#fff}
+.price-old{font-size:14px;color:#666;text-decoration:line-through}
+.price-per-liter{font-size:11px;color:#888;margin-bottom:4px}
+.card-footer{display:flex;justify-content:space-between;align-items:center;margin-top:6px;padding-top:6px;border-top:1px solid #222}
+.stock{font-size:12px;color:#4caf50;font-weight:600}
+.stock.low{color:#ff9800}
+.store-count{font-size:11px;color:#888}
+.adult-badge{position:absolute;top:30px;left:8px;background:#333;color:#ff9800;padding:2px 5px;border-radius:3px;font-size:10px}
+.loading,.empty{text-align:center;padding:50px 20px;color:#888;font-size:14px}
+.pagination{display:flex;justify-content:center;gap:4px;margin:20px 0;flex-wrap:wrap}
+.pagination button{background:#0f3460;color:#eee;padding:6px 12px;font-size:12px}
+.pagination button.active{background:#e94560;color:#fff}
+.pagination button:hover{background:#333}
+.modal{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.8);z-index:1000;display:flex;align-items:center;justify-content:center;padding:20px}
+.modal-content{background:#16213e;border-radius:12px;max-width:800px;width:100%;max-height:90vh;overflow-y:auto;position:relative;padding:24px}
+.modal-close{position:absolute;top:12px;right:12px;background:none;color:#888;font-size:24px;padding:4px 8px;z-index:10}
+.modal-close:hover{color:#fff}
+.modal-body{display:flex;gap:24px}
+.modal-image{flex:0 0 280px;position:relative}
+.modal-image img{width:100%;height:280px;object-fit:contain;background:#fff;border-radius:8px;padding:10px}
+.modal-badge{position:absolute;top:8px;left:8px;background:#e94560;color:#fff;padding:4px 10px;border-radius:4px;font-weight:bold;font-size:16px}
+.modal-info{flex:1}
+.modal-info h2{font-size:16px;line-height:1.4;margin-bottom:12px;color:#fff}
+.modal-price{margin-bottom:8px}
+.modal-price .price-current{font-size:28px}
+.modal-price .price-old{font-size:16px}
+.modal-meta{font-size:12px;color:#888;margin-bottom:8px}
+.modal-savings{background:#1b5e20;color:#4caf50;padding:6px 10px;border-radius:6px;font-size:13px;font-weight:600;margin-bottom:16px;display:inline-block}
+.modal-info h3{font-size:14px;margin-bottom:10px;color:#aaa}
+.modal-stores{display:flex;flex-direction:column;gap:6px}
+.store-row{display:flex;justify-content:space-between;align-items:center;padding:8px 10px;background:#0f3460;border-radius:6px;font-size:12px}
+.store-row .store-addr{color:#ccc;flex:1}
+.store-row .store-stock{color:#4caf50;font-weight:600;margin:0 12px;white-space:nowrap}
+.store-row .store-price{color:#fff;font-weight:bold;white-space:nowrap}
+.store-row.best{border:1px solid #4caf50}
+@media(max-width:1024px){.products-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:768px){
+.products-grid{grid-template-columns:repeat(2,1fr);gap:8px}
+.product-card img{height:140px}
+.controls-row{flex-direction:column;align-items:stretch}
+input[type="text"],select{width:100%;max-width:100%}
+.modal-body{flex-direction:column}
+.modal-image{flex:none}
+.modal-image img{height:200px}
+.quick-search{overflow-x:auto;flex-wrap:nowrap;padding-bottom:4px}
+}
+@media(max-width:480px){.products-grid{grid-template-columns:1fr}}
