@@ -5,7 +5,7 @@ import json
 import time
 from datetime import datetime
 from parser import (search_cities, check_store_code, fetch_products_page,
-                    parse_store_progressive, scan_range, DEFAULT_STORES)
+                    parse_store_progressive, parse_stores_parallel, scan_range, DEFAULT_STORES)
 
 app = Flask(__name__)
 DB_NAME = "magnit_data.db"
@@ -173,30 +173,12 @@ def api_parse():
         parse_progress = {"current": 0, "total": 0, "status": "loading",
                          "message": f"Парсинг {len(codes)} магазинов..."}
 
-        all_products = {}
-        for idx, (code, address) in enumerate(codes):
-            parse_progress["message"] = f"Магазин {code} ({idx+1}/{len(codes)})..."
-            products = parse_store_progressive(code, max_items=max_items, term=term)
-            for p in products:
-                pid = p["id"]
-                if pid not in all_products:
-                    all_products[pid] = {**p, "stores": []}
-                all_products[pid]["stores"].append({
-                    "code": code, "address": address,
-                    "stock": p["stock"], "price": p["price"],
-                    "discount_percent": p["discount_percent"]
-                })
-                if p["price"] < all_products[pid]["price"]:
-                    all_products[pid]["price"] = p["price"]
-                    all_products[pid]["discount_percent"] = p["discount_percent"]
-                    all_products[pid]["savings"] = p["savings"]
-                all_products[pid]["stock"] += p["stock"]
-            parse_progress["current"] = len(all_products)
-            parse_progress["total"] = len(all_products)
+        def on_progress(done, total, product_count):
+            parse_progress["message"] = f"Магазинов: {done}/{total}, товаров: {product_count}"
+            parse_progress["current"] = product_count
+            parse_progress["total"] = product_count
 
-        result = list(all_products.values())
-        for p in result:
-            p["stores"].sort(key=lambda x: x["price"])
+        result = parse_stores_parallel(codes, max_items=max_items, term=term, progress_callback=on_progress)
 
         if result:
             conn = get_db()
