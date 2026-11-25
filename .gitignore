@@ -4,3 +4,4 @@ magnit_data.db
 .env
 venv/
 tests/__pycache__/
+database.py
