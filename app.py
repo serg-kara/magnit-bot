@@ -84,7 +84,7 @@ def progress():
 def api_parse():
     global parse_progress
     try:
-        d=request.json;term=d.get('search') or None;max_items=int(d.get('max_items',500))
+        d=request.json;term=d.get('search') or None;max_items=int(d.get('max_items',300))
         city=d.get('city','');store_code=d.get('store_code','')
         if store_code and store_code!='all':
             c=get_db();row=c.execute("SELECT code,address FROM stores WHERE code=?",(store_code,)).fetchone();c.close()
