@@ -17,7 +17,37 @@ function openModal(p){document.getElementById('modal-img').src=p.image_url||'';d
 document.getElementById('modal-close').onclick=function(){modal.style.display='none'};modal.onclick=function(e){if(e.target===modal)modal.style.display='none'};
 sortSelect.onchange=function(){currentPage=1;grid.innerHTML='';loadProducts()};adultOnly.onchange=function(){currentPage=1;grid.innerHTML='';loadProducts()};searchInput.onkeydown=function(e){if(e.key==='Enter'){currentPage=1;grid.innerHTML='';loadProducts()}};favBtn.onclick=function(){showFavorites=!showFavorites;favBtn.classList.toggle('active');favBtn.textContent=showFavorites?'Все товары':'♡ Избранное';currentPage=1;grid.innerHTML='';loadProducts()};
 document.getElementById('map-btn').onclick=function(){mapModal.style.display='flex';setTimeout(initMap,200)};document.getElementById('map-close').onclick=function(){mapModal.style.display='none'};mapModal.onclick=function(e){if(e.target===mapModal)mapModal.style.display='none'};
-function initMap(){if(typeof ymaps==='undefined'){document.getElementById('yandex-map').innerHTML='<p style="padding:20px;color:#999">Карта недоступна</p>';return}ymaps.ready(function(){var city=citySelect.value||'Ставрополь';var centers={'Ставрополь':[45.0445,41.9691],'Краснодар':[45.0355,38.9753],'Армавир':[44.9976,41.1296],'Невинномысск':[44.6333,41.9444],'Курганинск':[44.8833,40.5833],'Москва':[55.7558,37.6173],'Санкт-Петербург':[59.9343,30.3351]};var center=centers[city]||[45.0445,41.9691];var map=new ymaps.Map('yandex-map',{center:center,zoom:12,controls:['zoomControl','searchControl']});fetch('/api/stores?city='+encodeURIComponent(city)).then(function(r){return r.json()}).then(function(stores){var hasCoords=false;stores.forEach(function(s){if(s.lat&&s.lon){hasCoords=true;var pm=new ymaps.Placemark([s.lat,s.lon],{balloonContentHeader:s.address,balloonContentBody:'Код:'+s.code,hintContent:s.address},{preset:'islands#redShoppingIcon'});map.geoObjects.add(pm)}});if(hasCoords){map.setBounds(map.geoObjects.getBounds(),{checkZoomRange:true,zoomMargin:30})}else{ymaps.search('Магнит '+city,{results:50,type:'biz'}).then(function(res){res.geoObjects.each(function(obj){var meta=obj.properties.get('CompanyMetaData');var addr=meta?meta.address:'';var pm=new ymaps.Placemark(obj.geometry.getCoordinates(),{balloonContentHeader:obj.properties.get('name')||'Магнит',balloonContentBody:addr},{preset:'islands#redShoppingIcon'});map.geoObjects.add(pm)});if(map.geoObjects.getLength()>0)map.setBounds(map.geoObjects.getBounds(),{checkZoomRange:true,zoomMargin:30})}).catch(function(){})}})})}
+function initMap(){
+if(typeof ymaps==='undefined'){document.getElementById('yandex-map').innerHTML='<p style="padding:20px;color:#999">Яндекс.Карты не загружены</p>';return}
+ymaps.ready(function(){
+var city=citySelect.value||'Ставрополь';
+var centers={'Ставрополь':[45.0445,41.9691],'Краснодар':[45.0355,38.9753],'Армавир':[44.9976,41.1296],'Невинномысск':[44.6333,41.9444],'Курганинск':[44.8833,40.5833],'Будённовск':[44.7833,44.1667],'Москва':[55.7558,37.6173],'Санкт-Петербург':[59.9343,30.3351],'Краснодарский край':[45.0355,38.9753]};
+var center=centers[city]||[45.0445,41.9691];
+var map=new ymaps.Map('yandex-map',{center:center,zoom:12,controls:['zoomControl']});
+var info=document.createElement('div');info.style.cssText='padding:8px;font-size:12px;color:#666;text-align:center';
+var mapDiv=document.getElementById('yandex-map');mapDiv.parentNode.insertBefore(info,mapDiv.nextSibling);
+info.textContent='Загрузка магазинов...';
+fetch('/api/stores?city='+encodeURIComponent(city)).then(function(r){return r.json()}).then(function(stores){
+var withCoords=stores.filter(function(s){return s.lat&&s.lon});
+var needGeo=stores.filter(function(s){return(!s.lat||!s.lon)&&s.address&&s.address.indexOf('уточните')<0});
+withCoords.forEach(function(s){
+var pm=new ymaps.Placemark([s.lat,s.lon],{balloonContentHeader:s.address,balloonContentBody:'Код: '+s.code,hintContent:s.address},{preset:'islands#redShoppingIcon'});
+map.geoObjects.add(pm)});
+if(withCoords.length>0){try{map.setBounds(map.geoObjects.getBounds(),{checkZoomRange:true,zoomMargin:30})}catch(e){}}
+if(needGeo.length>0){
+info.textContent='Геокодирование: 0/'+needGeo.length+'...';
+var idx=0;
+function geoNext(){
+if(idx>=needGeo.length){info.textContent='✅ '+map.geoObjects.getLength()+' магазинов на карте';try{map.setBounds(map.geoObjects.getBounds(),{checkZoomRange:true,zoomMargin:30})}catch(e){};return}
+var s=needGeo[idx];
+ymaps.geocode(s.address,{results:1}).then(function(res){
+var obj=res.geoObjects.get(0);
+if(obj){var c=obj.geometry.getCoordinates();
+var pm=new ymaps.Placemark(c,{balloonContentHeader:s.address,balloonContentBody:'Код: '+s.code,hintContent:s.address},{preset:'islands#redShoppingIcon'});
+map.geoObjects.add(pm);
+fetch('/api/stores/update_coords',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({code:s.code,lat:c[0],lon:c[1]})}).catch(function(){})}
+idx++;info.textContent='Геокодирование: '+idx+'/'+needGeo.length+'...';geoNext()}).catch(function(){idx++;geoNext()})}
+geoNext()}else if(withCoords.length===0){info.textContent='Нет адресов для геокодирования. Добавьте адреса через ⚙️ Магазины'}}).catch(function(e){info.textContent='Ошибка загрузки: '+e.message})})}
 document.getElementById('manage-stores-btn').onclick=function(){loadStoresList();storesModal.style.display='flex'};document.getElementById('stores-close').onclick=function(){storesModal.style.display='none';loadCities()};storesModal.onclick=function(e){if(e.target===storesModal){storesModal.style.display='none';loadCities()}};
 function loadStoresList(){fetch('/api/stores').then(function(r){return r.json()}).then(function(stores){var list=document.getElementById('stores-list');list.innerHTML='';stores.forEach(function(s){var div=document.createElement('div');div.className='store-item';div.innerHTML='<span><b>'+s.city+'</b> · '+s.address+' <small style="color:#999">('+s.code+')</small></span><button class="btn-secondary">✕</button>';div.querySelector('button').onclick=function(){fetch('/api/stores/delete',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({code:s.code})}).then(loadStoresList)};list.appendChild(div)})})}
 document.getElementById('add-store-btn').onclick=function(){var code=document.getElementById('new-code').value.trim(),addr=document.getElementById('new-address').value.trim(),city=document.getElementById('new-city').value.trim();if(!code||!city){alert('Укажите код и город');return}fetch('/api/stores/save',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({code:code,address:addr,city:city})}).then(function(){document.getElementById('new-code').value='';document.getElementById('new-address').value='';loadStoresList()})};

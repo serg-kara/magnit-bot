@@ -97,7 +97,28 @@ def api_parse():
         parse_progress={"current":0,"total":0,"status":"loading","message":f"Парсинг {len(codes)} магазинов..."}
         def on_prog(done,total,cnt):
             parse_progress["message"]=f"Магазинов:{done}/{total} товаров:{cnt}";parse_progress["current"]=cnt;parse_progress["total"]=cnt
-        result=parse_stores_parallel(codes,max_items=max_items,term=term,progress_callback=on_prog)
+        # Batch parsing: max 10 stores at a time to avoid timeout
+        result=[]
+        batch_size=10
+        for i in range(0,len(codes),batch_size):
+            batch=codes[i:i+batch_size]
+            parse_progress["message"]=f"Магазины {i+1}-{min(i+batch_size,len(codes))}/{len(codes)}..."
+            batch_result=parse_stores_parallel(batch,max_items=max_items,term=term,progress_callback=on_prog)
+            # Merge batch results
+            existing={p['id']:p for p in result}
+            for p in batch_result:
+                if p['id'] in existing:
+                    ep=existing[p['id']]
+                    ep['stores'].extend(p.get('stores',[]))
+                    ep['stock']+=p['stock']
+                    if p['discount_percent']>ep['discount_percent']:
+                        ep['discount_percent']=p['discount_percent']
+                        ep['old_price']=p['old_price']
+                    if p['price']<ep['price']:
+                        ep['price']=p['price'];ep['savings']=p['savings']
+                else:
+                    result.append(p);existing[p['id']]=p
+            parse_progress["current"]=len(result);parse_progress["total"]=len(result)
         if result:
             c=get_db();c.execute("DELETE FROM products")
             for p in result:
