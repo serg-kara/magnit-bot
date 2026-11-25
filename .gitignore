@@ -1,0 +1,6 @@
+__pycache__/
+*.pyc
+magnit_data.db
+.env
+venv/
+tests/__pycache__/
