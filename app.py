@@ -142,5 +142,10 @@ def fav_add():
 @app.route('/api/favorites/remove',methods=['POST'])
 def fav_rem():
     c=get_db();c.execute("DELETE FROM favorites WHERE product_id=?",(request.json['product_id'],));c.commit();c.close();return jsonify({'status':'ok'})
+
+@app.route('/api/stores/update_coords',methods=['POST'])
+def update_coords():
+    d=request.json;c=get_db();c.execute('UPDATE stores SET lat=?,lon=? WHERE code=?',(d['lat'],d['lon'],d['code']));c.commit();c.close();return jsonify({'status':'ok'})
+
 if __name__=='__main__':
     init_db();print("\n  http://127.0.0.1:5000\n");app.run(debug=False,host='127.0.0.1',port=5000,threaded=True)
