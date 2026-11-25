@@ -75,6 +75,12 @@ DEFAULT_STORES=[
 {"code":"stav_42","address":"Ставрополь, ул. Чапаева, д. 25","city":"Ставрополь"},
 {"code":"stav_43","address":"Ставрополь, ул. Чапаева, д. 4/1д","city":"Ставрополь"},
 {"code":"stav_44","address":"Ставрополь, ул. Южный обход, д. 1а","city":"Ставрополь"},
+{"code":"nev_01","address":"Невинномысск, ул Менделеева, д 1","city":"Невинномысск"},
+{"code":"nev_02","address":"Невинномысск, ул Баумана, стр 11","city":"Невинномысск"},
+{"code":"nev_03","address":"Невинномысск, ул Гагарина, д 21А","city":"Невинномысск"},
+{"code":"nev_04","address":"Невинномысск, ул Гагарина, д 56","city":"Невинномысск"},
+{"code":"nev_05","address":"Невинномысск, ул Апанасенко, д 82Б","city":"Невинномысск"},
+{"code":"nev_06","address":"Невинномысск, Луначарского ул, стр 145","city":"Невинномысск"},
 {"code":"992323","address":"Армавир","city":"Армавир"},
 {"code":"995101","address":"Невинномысск","city":"Невинномысск"},
 {"code":"992336","address":"Курганинск, ул Партизанская, д 215","city":"Курганинск"},
@@ -164,7 +170,7 @@ def parse_stores_parallel(codes_addr,max_items=1000,term=None,progress_callback=
     all_products={}
     def parse_one(ca):
         code,addr=ca;prods=parse_store_progressive(code,max_items=max_items,term=term);return code,addr,prods
-    with ThreadPoolExecutor(max_workers=4) as ex:
+    with ThreadPoolExecutor(max_workers=2) as ex:
         futs={ex.submit(parse_one,ca):ca for ca in codes_addr};done=0
         for f in as_completed(futs):
             code,addr,prods=f.result();done+=1
