@@ -8,19 +8,29 @@ DEFAULT_STORES=[
 {"code":"992301","address":"Краснодар, ул. Дзержинского, 42","city":"Краснодар"},
 {"code":"990101","address":"Краснодарский край","city":"Краснодар"},
 {"code":"990102","address":"Краснодарский край","city":"Краснодар"},
-{"code":"991002","address":"Ставрополь, ул. Доваторцев, 64","city":"Ставрополь"},
-{"code":"991003","address":"Ставрополь, ул. Лермонтова, 259","city":"Ставрополь"},
-{"code":"991004","address":"Ставрополь, ул. Краснофлотская, 91","city":"Ставрополь"},
-{"code":"991102","address":"Ставрополь, ул. Тухачевского, 22/1","city":"Ставрополь"},
-{"code":"991201","address":"Ставрополь, ул. Ленина, 440","city":"Ставрополь"},
-{"code":"991301","address":"Ставрополь, пр-кт К.Маркса, 47/30","city":"Ставрополь"},
-{"code":"991303","address":"Ставрополь, ул. Пирогова, 8","city":"Ставрополь"},
-{"code":"991501","address":"Ставрополь, ул. Трунова, 134В","city":"Ставрополь"},
-{"code":"992326","address":"Ставрополь, ул. Чапаева, 25","city":"Ставрополь"},
-{"code":"992330","address":"Ставрополь, ул. Рогожникова, 90","city":"Ставрополь"},
-{"code":"992334","address":"Ставрополь, пр-кт Кулакова, 29Д","city":"Ставрополь"},
-{"code":"997101","address":"Ставрополь, ул. 50 лет ВЛКСМ, 28а","city":"Ставрополь"},
-{"code":"997201","address":"Ставрополь, Фестивальный проезд, 7","city":"Ставрополь"},
+{"code":"991002","address":"Ставрополь, ул. Доваторцев, д. 64","city":"Ставрополь"},
+{"code":"991003","address":"Ставрополь, ул. Лермонтова, д. 259","city":"Ставрополь"},
+{"code":"991004","address":"Ставрополь, ул. Краснофлотская, д. 91","city":"Ставрополь"},
+{"code":"991102","address":"Ставрополь, ул. Тухачевского, д. 22/1","city":"Ставрополь"},
+{"code":"991201","address":"Ставрополь, ул. Ленина, д. 440","city":"Ставрополь"},
+{"code":"991301","address":"Ставрополь, пр-кт К.Маркса, д. 47/30","city":"Ставрополь"},
+{"code":"991303","address":"Ставрополь, ул. Пирогова, д. 8","city":"Ставрополь"},
+{"code":"991501","address":"Ставрополь, ул. Трунова, д. 134В","city":"Ставрополь"},
+{"code":"992326","address":"Ставрополь, ул. Чапаева, д. 25","city":"Ставрополь"},
+{"code":"992330","address":"Ставрополь, ул. Рогожникова, д. 90","city":"Ставрополь"},
+{"code":"992334","address":"Ставрополь, пр-кт Кулакова, д. 29Д","city":"Ставрополь"},
+{"code":"997101","address":"Ставрополь, ул. 50 лет ВЛКСМ, д. 28-а","city":"Ставрополь"},
+{"code":"997201","address":"Ставрополь, Фестивальный проезд, д. 7","city":"Ставрополь"},
+{"code":"991602","address":"Ставропольский край","city":"Ставрополь"},
+{"code":"991603","address":"Ставропольский край","city":"Ставрополь"},
+{"code":"991604","address":"Ставропольский край","city":"Ставрополь"},
+{"code":"991606","address":"Ставропольский край","city":"Ставрополь"},
+{"code":"991607","address":"Ставропольский край","city":"Ставрополь"},
+{"code":"991608","address":"Ставропольский край","city":"Ставрополь"},
+{"code":"991609","address":"Ставропольский край","city":"Ставрополь"},
+{"code":"991612","address":"Ставропольский край","city":"Ставрополь"},
+{"code":"991801","address":"Ставропольский край","city":"Ставрополь"},
+{"code":"991802","address":"Ставропольский край","city":"Ставрополь"},
 {"code":"992323","address":"Армавир","city":"Армавир"},
 {"code":"995101","address":"Невинномысск","city":"Невинномысск"},
 {"code":"992336","address":"Курганинск","city":"Курганинск"},
@@ -120,7 +130,10 @@ def parse_stores_parallel(codes_addr,max_items=1000,term=None,progress_callback=
                 if pid not in all_products:all_products[pid]={**p,"stores":[]}
                 all_products[pid]["stores"].append({"code":code,"address":addr,"stock":p["stock"],"price":p["price"],"discount_percent":p["discount_percent"]})
                 if p["price"]<all_products[pid]["price"]:
-                    all_products[pid]["price"]=p["price"];all_products[pid]["discount_percent"]=p["discount_percent"];all_products[pid]["savings"]=p["savings"]
+                    all_products[pid]["price"]=p["price"];all_products[pid]["savings"]=p["savings"]
+                if p["discount_percent"]>all_products[pid]["discount_percent"]:
+                    all_products[pid]["discount_percent"]=p["discount_percent"]
+                    all_products[pid]["old_price"]=p["old_price"]
                 all_products[pid]["stock"]+=p["stock"]
     result=list(all_products.values())
     for p in result:p["stores"].sort(key=lambda x:x["price"])

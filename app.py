@@ -117,7 +117,7 @@ def api_products():
     if md>0:q+=" AND discount_percent>=?";params.append(md)
     if search:q+=" AND name LIKE ?";params.append(f"%{search}%")
     if adult:q+=" AND is_adult=1"
-    sm={'discount_desc':'discount_percent DESC','savings_desc':'savings DESC','price_asc':'price ASC','price_desc':'price DESC','stock_desc':'stock DESC'}
+    sm={'discount_desc':'(CASE WHEN discount_percent>0 THEN 0 ELSE 1 END),discount_percent DESC,price ASC','savings_desc':'savings DESC','price_asc':'price ASC','price_desc':'price DESC','stock_desc':'stock DESC'}
     order=sm.get(sort,'discount_percent DESC')
     total=c.execute(q.replace("SELECT *","SELECT COUNT(*)"),params).fetchone()[0]
     q+=f" ORDER BY {order} LIMIT ? OFFSET ?";params.extend([pp,(page-1)*pp])
